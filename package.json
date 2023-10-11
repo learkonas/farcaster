@@ -1,0 +1,14 @@
+{
+    "name": "farcaster-growth",
+    "version": "1.0.0",
+    "description": "Tracking the growth of the Farcaster network",
+    "main": "index.js",
+    "repository": {
+      "type": "git",
+      "url": ""
+    },
+    "scripts": {
+      "start": "node index.js"
+    }
+  }
+  
