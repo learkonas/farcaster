@@ -1,6 +1,11 @@
+html {
+    /*background-image: url("bg.webp");*/
+    background-color: rgb(242, 225, 238);
+}
+
 body {
-    background-color: #f0f0f0;
     font-family: Arial, sans-serif;
+    justify-items: center;
   }
   h1, h2 {
     color: purple;
@@ -15,3 +20,30 @@ body {
     padding: 15px;
     text-align: left;
   }
+
+#wrapper {
+  border-radius: 30px;
+  width: 60%;
+  padding: 0vw 4vw 0vw 4vw;
+  margin: auto;
+  margin-top: 1%;
+}
+
+.block {
+  text-align: center;
+}
+
+#stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr  0fr;
+  width: 100%;
+}
+
+#stats .chart {
+  grid-row: 1;
+}
+
+#stats .latest {
+  grid-row: 2;
+}
