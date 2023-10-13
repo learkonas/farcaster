@@ -3,7 +3,7 @@ const app = express();
 const https = require('https');
 
 //app.get('/data', (req, res) => {
-  https.get('https://fnames.farcaster.xyz/transfers?from_ts=1697060069', (response) => {
+  https.get('https://fnames.farcaster.xyz/transfers?from_ts=1697229001', (response) => {
     let data = '';
 
     response.on('data', (chunk) => {
