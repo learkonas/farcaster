@@ -67,35 +67,46 @@ function retain10latest () {
 }
 
 //from_ts=1697229001
-https.get('https://fnames.farcaster.xyz/transfers?fid=0', (response) => {
-  let data = '';
-
-  response.on('data', (chunk) => {
-    data += chunk;
-  });
-
-  response.on('end', async () => {
-    let parsedData = JSON.parse(data)
-    let accountCount = parsedData.transfers.length
-    //console.log(accountCount)
-    if (accountCount > 10) {
-      accountCount = 10
-    }
-    //console.log(accountCount)
-    await deleteTopNRecords(accountCount)   
-
-    let latestObjects = parsedData.transfers.slice(-accountCount);
-    for (const object of latestObjects) {
-      updateLatest(object.id, object.timestamp, object.username, object.owner);
-    }
-
-    parsedData.transfers.forEach(item => {
-      const { id, timestamp, username, owner } = item;
-      storeFids(id, timestamp, username, owner);
+async function fetchData() {
+  https.get(`https://fnames.farcaster.xyz/transfers?from_ts=1697312598`, async (response) => {
+    let data = '';
+    //console.log("Fetching 100 ids from ID:", from_id)
+    response.on('data', (chunk) => {
+      data += chunk;
     });
-    //res.send(data);
-  });
 
-}).on('error', (error) => {
-  console.error(error);
-});
+    response.on('end', async () => {
+      let parsedData = JSON.parse(data)
+      if (parsedData.transfers.length === 0) {
+        // No more data to fetch
+        return;
+      }
+      
+      let accountCount = parsedData.transfers.length
+      //console.log(accountCount)
+      if (accountCount > 10) {
+        accountCount = 10
+      }
+      //console.log(accountCount)
+      //await deleteTopNRecords(accountCount)   
+
+      let latestObjects = parsedData.transfers.slice(-accountCount);
+      for (const object of latestObjects) {
+        //updateLatest(object.id, object.timestamp, object.username, object.owner);
+      }
+      
+      parsedData.transfers.forEach(item => {
+        const { id, timestamp, username, owner } = item;
+        storeFids(id, timestamp, username, owner);
+      });
+      //res.send(data);
+      /*
+      // Fetch next batch of data
+      await fetchData(from_id + 100);*/
+    });
+
+  }).on('error', (error) => {
+    console.error(error);
+  });
+}
+fetchData();
