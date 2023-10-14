@@ -66,9 +66,9 @@ function retain10latest () {
   }
 }
 
-//from_ts=1697229001
+//from_ts=1697313747 will catch only new IDs
 async function fetchData() {
-  https.get(`https://fnames.farcaster.xyz/transfers?from_ts=1697312598`, async (response) => {
+  https.get(`https://fnames.farcaster.xyz/transfers?from_ts=1697313747`, async (response) => {
     let data = '';
     //console.log("Fetching 100 ids from ID:", from_id)
     response.on('data', (chunk) => {
@@ -83,16 +83,15 @@ async function fetchData() {
       }
       
       let accountCount = parsedData.transfers.length
-      //console.log(accountCount)
+      console.log(accountCount, " accounts fetched in this batch.")
       if (accountCount > 10) {
         accountCount = 10
       }
-      //console.log(accountCount)
-      //await deleteTopNRecords(accountCount)   
+      await deleteTopNRecords(accountCount)   
 
       let latestObjects = parsedData.transfers.slice(-accountCount);
       for (const object of latestObjects) {
-        //updateLatest(object.id, object.timestamp, object.username, object.owner);
+        updateLatest(object.id, object.timestamp, object.username, object.owner);
       }
       
       parsedData.transfers.forEach(item => {
