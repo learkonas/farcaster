@@ -67,8 +67,9 @@ function retain10latest () {
 }
 
 //from_ts=1697320880 will catch only new IDs
+let ts = 1697321442;
 async function fetchData() {
-  https.get(`https://fnames.farcaster.xyz/transfers?from_ts=1697320880`, async (response) => {
+  https.get(`https://fnames.farcaster.xyz/transfers?from_ts=${ts}`, async (response) => {
     let data = '';
     //console.log("Fetching 100 ids from ID:", from_id)
     response.on('data', (chunk) => {
@@ -78,7 +79,7 @@ async function fetchData() {
     response.on('end', async () => {
       let parsedData = JSON.parse(data)
       if (parsedData.transfers.length === 0) {
-        // No more data to fetch
+        console.log("No accounts in this batch.")
         return;
       }
       
@@ -107,5 +108,7 @@ async function fetchData() {
   }).on('error', (error) => {
     console.error(error);
   });
+  ts += 600; // increase ts by 600 (10 minutes)
 }
-fetchData();
+// Run fetchData every 600 seconds
+setInterval(fetchData, 600 * 1000);
