@@ -7,6 +7,7 @@
         "type": "git",
         "url": ""
     },
+    "type": "module",
     "scripts": {
         "start": "node index.js"
     },

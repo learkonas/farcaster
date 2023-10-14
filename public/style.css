@@ -6,20 +6,26 @@ html {
 body {
     font-family: Arial, sans-serif;
     justify-items: center;
-  }
-  h1, h2 {
+}
+
+h1, h2 {
     color: purple;
-  }
-  table {
-    width: 100%;
-    color: purple;
-    border-collapse: collapse;
-  }
-  th, td {
-    border: 1px solid purple;
-    padding: 15px;
-    text-align: left;
-  }
+}
+
+table {
+  width: 100%;
+  color: purple;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid purple;
+  padding: 15px;
+}
+
+th {
+  text-align: center
+}
 
 #wrapper {
   border-radius: 30px;
