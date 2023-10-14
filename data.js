@@ -66,9 +66,9 @@ function retain10latest () {
   }
 }
 
-//from_ts=1697313747 will catch only new IDs
+//from_ts=1697320880 will catch only new IDs
 async function fetchData() {
-  https.get(`https://fnames.farcaster.xyz/transfers?from_ts=1697313747`, async (response) => {
+  https.get(`https://fnames.farcaster.xyz/transfers?from_ts=1697320880`, async (response) => {
     let data = '';
     //console.log("Fetching 100 ids from ID:", from_id)
     response.on('data', (chunk) => {

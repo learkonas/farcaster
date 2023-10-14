@@ -3,7 +3,6 @@
 <head>
   <title>Farcaster Growth</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@1.1.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -58,6 +57,17 @@
                 }]
               },
               options: {
+                plugins: {
+    tooltip: {
+      callbacks: {
+        title: function(context) {
+          var unixTimestamp = context[0].parsed.x;
+          var date = new Date(unixTimestamp * 1000);
+          return date.toLocaleString();
+        }
+      }
+    }
+  },
                 scales: {
                   x: {
                     type: 'linear',
@@ -107,7 +117,7 @@
 
           tableData += `
           <tr>
-            <td><a href="https://fcast.me/${name}">${name}</a></td>
+            <td><a href="https://warpcast.com/${name}">${name}</a></td>
             <td><a href="https://optimistic.etherscan.io/advanced-filter?fadd=${owner}&tadd=0xfc209d89d1f31fa2b4e4816464ae1993bd97c3af&mtd=0xa44c9ce7%7eRegister">${localTime}</a></td>
           </tr>  
           `          
