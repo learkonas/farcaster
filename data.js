@@ -66,9 +66,9 @@ function retain10latest () {
   }
 }
 
-//from_ts=1697320880 will catch only new IDs
-let ts = 1697381565;
+
 async function fetchData() {
+  let ts = 1697383910;
   https.get(`https://fnames.farcaster.xyz/transfers?from_ts=${ts}`, async (response) => {
     let data = '';
     //console.log("Fetching 100 ids from ID:", from_id)
@@ -92,6 +92,8 @@ async function fetchData() {
 
       let latestObjects = parsedData.transfers.slice(-accountCount);
       for (const object of latestObjects) {
+        let ts = object.timestamp + 1
+        console.log(ts)
         updateLatest(object.id, object.timestamp, object.username, object.owner);
       }
       
