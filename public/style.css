@@ -33,7 +33,16 @@ th, td {
 }
 
 th {
-  text-align: center
+  text-align: center;
+  font-size: 1.5vw;
+}
+
+a {
+  font-size: 1.4vw;
+  color: #3f3a40ba;
+  text-decoration: none;
+  font-weight: bold;
+  font-style: italic;
 }
 
 #wrapper {
