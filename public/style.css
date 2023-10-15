@@ -17,8 +17,15 @@ body {
 
 h1, h2 {
     color: purple;
-    font-size: 2.05vw;
     font-weight: 900;
+}
+
+h1 {
+  font-size: 2.1vw;
+}
+
+h2 {
+  font-size: 2vw;
 }
 
 table {
@@ -38,7 +45,7 @@ th {
 }
 
 a {
-  font-size: 1.4vw;
+  font-size: 1.25vw;
   color: #3f3a40ba;
   text-decoration: none;
   font-weight: bold;

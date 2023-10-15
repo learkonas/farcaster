@@ -13,16 +13,14 @@
       <div id="title" class="block">
         <h1>Watch the Farcaster family grow!</h1>
       </div>
-      <div id="stats">
-        <div id="chart" class="block">
-          <canvas id="myChart"></canvas>
-        </div>
-        <div id="latest" class="block">
-          <h2>Last 10 accounts to join Farcaster</h2>
-          <table id="latestData">
-          </table>
-        </div>  
+      <div id="chart" class="block">
+        <canvas id="myChart"></canvas>
       </div>
+      <div id="latest" class="block">
+        <h2>Last 10 accounts to join Farcaster</h2>
+        <table id="latestData">
+        </table>
+      </div>  
     </div>  
   </div>
   <script src="/__/firebase/10.4.0/firebase-app-compat.js"></script>
@@ -123,7 +121,7 @@
           tableData += `
           <tr>
             <td><a href="https://warpcast.com/${name}">${name}</a></td>
-            <td><a href="https://www.google.com/search?q=${owner}">${localTime}</a></td>
+            <td><a href="https://www.google.com/search?q=${owner}" target="_blank">${localTime}</a></td>
           </tr>  
           `          
         }
