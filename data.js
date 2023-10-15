@@ -68,7 +68,7 @@ function retain10latest () {
 
 
 async function fetchData() {
-  let ts = 1697383910;
+  let ts = 1697385770;
   https.get(`https://fnames.farcaster.xyz/transfers?from_ts=${ts}`, async (response) => {
     let data = '';
     //console.log("Fetching 100 ids from ID:", from_id)
@@ -91,10 +91,12 @@ async function fetchData() {
       await deleteTopNRecords(accountCount)   
 
       let latestObjects = parsedData.transfers.slice(-accountCount);
-      for (const object of latestObjects) {
-        let ts = object.timestamp + 1
-        console.log(ts)
+      for (let i = 0; i < latestObjects.length; i++) {
+        const object = latestObjects[i];
         updateLatest(object.id, object.timestamp, object.username, object.owner);
+        if (i === latestObjects.length - 1) {
+          console.log(object.timestamp + 1)
+        }  
       }
       
       parsedData.transfers.forEach(item => {
