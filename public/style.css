@@ -1,15 +1,24 @@
+:root {
+  --primary-color: rgb(206, 180, 199);
+  --secondary-color: rgb(242, 222, 237);
+  --border-color: purple;
+}
+
 html {
     /*background-image: url("bg.webp");*/
-    background-color: rgb(242, 225, 238);
+    background: radial-gradient(farthest-corner ellipse, rgb(206 180 199), rgb(242 222 237), rgb(206 180 199));
 }
 
 body {
     font-family: Arial, sans-serif;
     justify-items: center;
+    font-family: 'Lato', sans-serif;
 }
 
 h1, h2 {
     color: purple;
+    font-size: 2.05vw;
+    font-weight: 900;
 }
 
 table {

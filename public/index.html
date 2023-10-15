@@ -3,6 +3,7 @@
 <head>
   <title>Farcaster Growth</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -58,16 +59,19 @@
               },
               options: {
                 plugins: {
-    tooltip: {
-      callbacks: {
-        title: function(context) {
-          var unixTimestamp = context[0].parsed.x;
-          var date = new Date(unixTimestamp * 1000);
-          return date.toLocaleString();
-        }
-      }
-    }
-  },
+                  tooltip: {
+                    callbacks: {
+                      title: function(context) {
+                        var unixTimestamp = context[0].parsed.x;
+                        var date = new Date(unixTimestamp * 1000);
+                        return date.toLocaleString();
+                      }
+                    }
+                  }
+                },
+                legend: {
+                  display: false,
+                },
                 scales: {
                   x: {
                     type: 'linear',

@@ -67,7 +67,7 @@ function retain10latest () {
 }
 
 //from_ts=1697320880 will catch only new IDs
-let ts = 1697321442;
+let ts = 1697381565;
 async function fetchData() {
   https.get(`https://fnames.farcaster.xyz/transfers?from_ts=${ts}`, async (response) => {
     let data = '';
@@ -110,5 +110,7 @@ async function fetchData() {
   });
   ts += 600; // increase ts by 600 (10 minutes)
 }
+
+fetchData()
 // Run fetchData every 600 seconds
-setInterval(fetchData, 600 * 1000);
+//setInterval(fetchData, 600 * 1000);
