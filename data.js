@@ -67,11 +67,11 @@ function retain10latest () {
 }
 
 
-async function fetchData() {
-  let ts = 1697385770;
-  https.get(`https://fnames.farcaster.xyz/transfers?from_ts=${ts}`, async (response) => {
+function fetchData(timestamp) {
+  let next_ts = 0;
+  https.get(`https://fnames.farcaster.xyz/transfers?from_ts=${timestamp}`, async (response) => {
     let data = '';
-    //console.log("Fetching 100 ids from ID:", from_id)
+    //console.log("Fetching 100 ids from timestamp:", ts)
     response.on('data', (chunk) => {
       data += chunk;
     });
@@ -80,11 +80,12 @@ async function fetchData() {
       let parsedData = JSON.parse(data)
       if (parsedData.transfers.length === 0) {
         console.log("No accounts in this batch.")
+        process.exit(0);
         return;
       }
       
       let accountCount = parsedData.transfers.length
-      console.log(accountCount, " accounts fetched in this batch.")
+      console.log(accountCount, "accounts fetched in this batch.")
       if (accountCount > 10) {
         accountCount = 10
       }
@@ -95,7 +96,8 @@ async function fetchData() {
         const object = latestObjects[i];
         updateLatest(object.id, object.timestamp, object.username, object.owner);
         if (i === latestObjects.length - 1) {
-          console.log(object.timestamp + 1)
+          next_ts = object.timestamp + 1
+          console.log(next_ts)
         }  
       }
       
@@ -105,16 +107,20 @@ async function fetchData() {
       });
       //res.send(data);
       /*
-      // Fetch next batch of data
-      await fetchData(from_id + 100);*/
+      // Fetch next batch of data*/
+      if (accountCount === 100) {
+        console.log("Collecting the next batch from timestamp", next_ts)
+        fetchData(next_ts);
+      } else {
+        process.exit(0);
+      }
     });
 
   }).on('error', (error) => {
     console.error(error);
   });
-  ts += 600; // increase ts by 600 (10 minutes)
 }
 
-fetchData()
+fetchData(1697650374)
 // Run fetchData every 600 seconds
 //setInterval(fetchData, 600 * 1000);
