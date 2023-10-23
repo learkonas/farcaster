@@ -69,6 +69,7 @@ function retain10latest () {
 
 function fetchData(timestamp) {
   let next_ts = 0;
+  let new_batch_needed;
   https.get(`https://fnames.farcaster.xyz/transfers?from_ts=${timestamp}`, async (response) => {
     let data = '';
     //console.log("Fetching 100 ids from timestamp:", ts)
@@ -87,9 +88,12 @@ function fetchData(timestamp) {
       let accountCount = parsedData.transfers.length
       console.log(accountCount, "accounts fetched in this batch.")
       if (accountCount > 10) {
+        if (accountCount === 100) {
+          new_batch_needed = true;
+        }
         accountCount = 10
       }
-      await deleteTopNRecords(accountCount)   
+      //await deleteTopNRecords(accountCount)   
 
       let latestObjects = parsedData.transfers.slice(-accountCount);
       for (let i = 0; i < latestObjects.length; i++) {
@@ -108,7 +112,7 @@ function fetchData(timestamp) {
       //res.send(data);
       /*
       // Fetch next batch of data*/
-      if (accountCount === 100) {
+      if (new_batch_needed == true) {
         console.log("Collecting the next batch from timestamp", next_ts)
         fetchData(next_ts);
       } else {
@@ -121,6 +125,6 @@ function fetchData(timestamp) {
   });
 }
 
-fetchData(1697650374)
+fetchData(1698069516)
 // Run fetchData every 600 seconds
 //setInterval(fetchData, 600 * 1000);

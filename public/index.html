@@ -40,9 +40,13 @@
         var ctx = document.getElementById('myChart').getContext('2d');
             var labels = [];
             var data = [];
+            let index = 0;
             for (let key in graph) {
-              labels.push(graph[key]['unixtime']);
-              data.push(graph[key]['fid']);
+              if (index % 20 === 0) {
+                labels.push(graph[key]['unixtime']);
+                data.push(graph[key]['fid']);
+              }
+              index++;
             }
             var myChart = new Chart(ctx, {
               type: 'line',
