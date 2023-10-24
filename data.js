@@ -93,7 +93,7 @@ function fetchData(timestamp) {
         }
         accountCount = 10
       }
-      //await deleteTopNRecords(accountCount)   
+      await deleteTopNRecords(accountCount)   
 
       let latestObjects = parsedData.transfers.slice(-accountCount);
       for (let i = 0; i < latestObjects.length; i++) {
