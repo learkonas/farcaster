@@ -25,13 +25,14 @@ function storeFids(id, timestamp, username, address) {
   });
 }
 
-function updateLatest(id, timestamp, username, address) {
-  set(ref(db, 'latest/' + timestamp), {
+async function updateLatest(id, timestamp, username, address) {
+  await set(ref(db, 'latest/' + timestamp), {
     fid: id,
     name: username,
     owner: address,
     unixtime: timestamp
   });
+  console.log(" Adding", timestamp, "to latest.")
 }
 
 async function deleteRecord(key) {
@@ -48,6 +49,7 @@ async function deleteTopNRecords(additionsLength) {
     const fidToDelete = fids.slice(0, additionsLength); // Get top keys up to additionsLength
     for (const key of fidToDelete) {
       await deleteRecord('latest/' + key); // Delete each record
+      console.log("Deleted", key, "from latest.")
     }
   }
 }
@@ -98,10 +100,10 @@ function fetchData(timestamp) {
       let latestObjects = parsedData.transfers.slice(-accountCount);
       for (let i = 0; i < latestObjects.length; i++) {
         const object = latestObjects[i];
-        updateLatest(object.id, object.timestamp, object.username, object.owner);
+        await updateLatest(object.id, object.timestamp, object.username, object.owner);
         if (i === latestObjects.length - 1) {
           next_ts = object.timestamp + 1
-          console.log(next_ts)
+          console.log("Use this timestamp next:", next_ts)
         }  
       }
       
@@ -125,6 +127,6 @@ function fetchData(timestamp) {
   });
 }
 
-fetchData(1698070120)
+fetchData(1698322394)
 // Run fetchData every 600 seconds
 //setInterval(fetchData, 600 * 1000);
