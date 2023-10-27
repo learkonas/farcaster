@@ -1,4 +1,5 @@
 import https from 'https';
+import chalk from 'chalk';
 import { initializeApp } from "firebase/app";
 //import { getAnalytics } from "firebase/analytics";
 
@@ -32,7 +33,7 @@ async function updateLatest(id, timestamp, username, address) {
     owner: address,
     unixtime: timestamp
   });
-  console.log(" Adding", timestamp, "to latest.")
+  console.log(` Adding ${timestamp} to latest.`)
 }
 
 async function deleteRecord(key) {
@@ -49,7 +50,7 @@ async function deleteTopNRecords(additionsLength) {
     const fidToDelete = fids.slice(0, additionsLength); // Get top keys up to additionsLength
     for (const key of fidToDelete) {
       await deleteRecord('latest/' + key); // Delete each record
-      console.log("Deleted", key, "from latest.")
+      console.log(`Deleted ${chalk.yellow(key)} from latest.`)
     }
   }
 }
@@ -74,7 +75,7 @@ function fetchData(timestamp) {
   let new_batch_needed;
   https.get(`https://fnames.farcaster.xyz/transfers?from_ts=${timestamp}`, async (response) => {
     let data = '';
-    //console.log("Fetching 100 ids from timestamp:", ts)
+    //console.log(`Fetching 100 ids from timestamp ${chalk.yellow(timestamp)}.`)
     response.on('data', (chunk) => {
       data += chunk;
     });
@@ -82,13 +83,13 @@ function fetchData(timestamp) {
     response.on('end', async () => {
       let parsedData = JSON.parse(data)
       if (parsedData.transfers.length === 0) {
-        console.log("No accounts in this batch.")
+        console.log(`No accounts in batch ${chalk.yellow(timestamp)}.`)
         process.exit(0);
         return;
       }
       
       let accountCount = parsedData.transfers.length
-      console.log(accountCount, "accounts fetched in this batch.")
+      console.log(`${accountCount} accounts fetched in batch ${chalk.yellow(timestamp)}.`)
       if (accountCount > 10) {
         if (accountCount === 100) {
           new_batch_needed = true;
@@ -103,7 +104,7 @@ function fetchData(timestamp) {
         await updateLatest(object.id, object.timestamp, object.username, object.owner);
         if (i === latestObjects.length - 1) {
           next_ts = object.timestamp + 1
-          console.log("Use this timestamp next:", next_ts)
+          console.log(`Use this timestamp next: ${chalk.yellow(next_ts)}.`)
         }  
       }
       
@@ -115,7 +116,7 @@ function fetchData(timestamp) {
       /*
       // Fetch next batch of data*/
       if (new_batch_needed == true) {
-        console.log("Collecting the next batch from timestamp", next_ts)
+        console.log(`Collecting the next batch from timestamp ${chalk.yellow(next_ts)}.`)
         fetchData(next_ts);
       } else {
         process.exit(0);
@@ -127,6 +128,6 @@ function fetchData(timestamp) {
   });
 }
 
-fetchData(1698322394)
+fetchData(1698417484)
 // Run fetchData every 600 seconds
 //setInterval(fetchData, 600 * 1000);
