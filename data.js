@@ -104,7 +104,7 @@ function fetchData(timestamp) {
         await updateLatest(object.id, object.timestamp, object.username, object.owner);
         if (i === latestObjects.length - 1) {
           next_ts = object.timestamp + 1
-          console.log(`Use this timestamp next: ${chalk.yellow(next_ts)}.`)
+          console.log(`Use this timestamp next: ${chalk.yellow(next_ts)}`)
         }  
       }
       
@@ -128,6 +128,6 @@ function fetchData(timestamp) {
   });
 }
 
-fetchData(1698417484)
+fetchData(1698448254)
 // Run fetchData every 600 seconds
 //setInterval(fetchData, 600 * 1000);

@@ -42,7 +42,7 @@
             var data = [];
             let index = 0;
             for (let key in graph) {
-              if (index % 30 === 0 || index <= 700 || Object.keys(graph).length - index <= 300)  {
+              if (index % 40 === 0 || index <= 700 || Object.keys(graph).length - index <= 300)  {
                 labels.push(graph[key]['unixtime']);
                 data.push(graph[key]['fid']);
               }
