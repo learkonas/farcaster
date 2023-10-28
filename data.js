@@ -19,8 +19,15 @@ const app = initializeApp(firebaseConfig);
 import { getDatabase, ref, set, child, get, remove} from "firebase/database";
 const db = getDatabase();
 
-function storeFids(id, timestamp, username, address) {
+function storeFids(id, timestamp) {
   set(ref(db, 'graph/' + timestamp), {
+    fid: id,
+    unixtime: timestamp
+  });
+}
+
+function storeSeparateFids(id, timestamp) {
+  set(ref(db, 'sepgraph/' + timestamp), {
     fid: id,
     unixtime: timestamp
   });
@@ -69,13 +76,83 @@ function retain10latest () {
   }
 }
 
+function fetchExisting(id) {
+  https.get(`https://fnames.farcaster.xyz/transfers?from_id=${id}`, async (response) => {
+    let data = '';
+    console.log(`Fetching ids from ID ${chalk.yellow(id+1)} to ${chalk.yellow(id+100)}.`)
+    response.on('data', (chunk) => {
+      data += chunk;
+    });
 
-function fetchData(timestamp) {
+    response.on('end', async () => {
+      let parsedData = JSON.parse(data)
+      parsedData.transfers.forEach(item => {
+        const { id, timestamp } = item;
+        storeFids(id, timestamp);
+      });
+
+      let accountCount = parsedData.transfers.length
+
+      if (parsedData.transfers.length <100) {
+        console.log(`Final batch of ${chalk.yellow(accountCount)} accounts added from id batch ${chalk.yellow(id+1)}.`)
+        process.exit(0);
+      }
+      else {
+        console.log(`Added ${chalk.yellow(accountCount)} accounts from id batch ${chalk.yellow(id+1)}.`)
+        console.log(``)
+        fetchExisting(id+100)
+      }
+    });
+  }).on('error', (error) => {
+    console.error(error);
+  });
+}
+
+
+function fetchSeparate(id) {
+  
+  deleteRecord('sepGraph/');
+  if (id === 400) {
+    id = 25500
+  }
+  https.get(`https://fnames.farcaster.xyz/transfers?from_id=${id}`, async (response) => {
+    let data = '';
+    console.log(`Fetching ids from ID ${chalk.yellow(id+1)} to ${chalk.yellow(id+100)}.`)
+    response.on('data', (chunk) => {
+      data += chunk;
+    });
+
+    response.on('end', async () => {
+      let parsedData = JSON.parse(data)
+      parsedData.transfers.forEach(item => {
+        const { id, timestamp } = item;
+        storeSeparateFids(id, timestamp);
+      });
+
+      let accountCount = parsedData.transfers.length
+
+      if (parsedData.transfers.length <100) {
+        console.log(`Final batch of ${chalk.yellow(accountCount)} accounts added from id batch ${chalk.yellow(id+1)}.`)
+        process.exit(0);
+      }
+      else {
+        console.log(`Added ${chalk.yellow(accountCount)} accounts from id batch ${chalk.yellow(id+1)}.`)
+        console.log(``)
+        fetchSeparate(id+100)
+      }
+    });
+  }).on('error', (error) => {
+    console.error(error);
+  });
+}
+
+fetchSeparate(0)
+
+function fetchNew(timestamp) {
   let next_ts = 0;
   let new_batch_needed;
   https.get(`https://fnames.farcaster.xyz/transfers?from_ts=${timestamp}`, async (response) => {
     let data = '';
-    //console.log(`Fetching 100 ids from timestamp ${chalk.yellow(timestamp)}.`)
     response.on('data', (chunk) => {
       data += chunk;
     });
@@ -85,7 +162,6 @@ function fetchData(timestamp) {
       if (parsedData.transfers.length === 0) {
         console.log(`No accounts in batch ${chalk.yellow(timestamp)}.`)
         process.exit(0);
-        return;
       }
       
       let accountCount = parsedData.transfers.length
@@ -109,8 +185,8 @@ function fetchData(timestamp) {
       }
       
       parsedData.transfers.forEach(item => {
-        const { id, timestamp, username, owner } = item;
-        storeFids(id, timestamp, username, owner);
+        const { id, timestamp } = item;
+        storeFids(id, timestamp);
       });
       //res.send(data);
       /*
@@ -128,6 +204,10 @@ function fetchData(timestamp) {
   });
 }
 
-fetchData(1698488450)
+//fetchNew(1698492334)
+
+
+//fetchExisting(0) // will fetch every accout from id 0
+//deleteRecord('graph/');
 // Run fetchData every 600 seconds
 //setInterval(fetchData, 600 * 1000);

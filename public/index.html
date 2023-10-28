@@ -33,7 +33,7 @@
     }
 
     let graph = []
-    const db = firebase.database().ref('graph');
+    const db = firebase.database().ref('sepgraph');
     db.get().then((snapshot) => {
       if (snapshot.exists()) {
         graph = snapshot.val()
