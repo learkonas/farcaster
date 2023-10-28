@@ -128,6 +128,6 @@ function fetchData(timestamp) {
   });
 }
 
-fetchData(1698448254)
+fetchData(1698488450)
 // Run fetchData every 600 seconds
 //setInterval(fetchData, 600 * 1000);
