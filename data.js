@@ -77,6 +77,7 @@ function retain10latest () {
 }
 
 function fetchExisting(id) {
+  let sepgraph_additions = 0;
   https.get(`https://fnames.farcaster.xyz/transfers?from_id=${id}`, async (response) => {
     let data = '';
     console.log(`Fetching ids from ID ${chalk.yellow(id+1)} to ${chalk.yellow(id+100)}.`)
@@ -88,17 +89,20 @@ function fetchExisting(id) {
       let parsedData = JSON.parse(data)
       parsedData.transfers.forEach(item => {
         const { id, timestamp } = item;
+        if (id <= 701 || id >= 25600 || id % 40 == 0) {
+          storeSeparateFids(id, timestamp);
+          sepgraph_additions += 1
+        }
         storeFids(id, timestamp);
       });
 
       let accountCount = parsedData.transfers.length
-
       if (parsedData.transfers.length <100) {
-        console.log(`Final batch of ${chalk.yellow(accountCount)} accounts added from id batch ${chalk.yellow(id+1)}.`)
+        console.log(`Final batch of ${chalk.yellow(accountCount)} accounts added from id batch ${chalk.yellow(id+1)}, with ${sepgraph_additions} added to Separate Graph.`)
         process.exit(0);
       }
       else {
-        console.log(`Added ${chalk.yellow(accountCount)} accounts from id batch ${chalk.yellow(id+1)}.`)
+        console.log(`Added ${chalk.yellow(accountCount)} accounts from id batch ${chalk.yellow(id+1)}, with ${sepgraph_additions} added to Separate Graph.`)
         console.log(``)
         fetchExisting(id+100)
       }
@@ -107,46 +111,6 @@ function fetchExisting(id) {
     console.error(error);
   });
 }
-
-
-function fetchSeparate(id) {
-  
-  deleteRecord('sepGraph/');
-  if (id === 400) {
-    id = 25500
-  }
-  https.get(`https://fnames.farcaster.xyz/transfers?from_id=${id}`, async (response) => {
-    let data = '';
-    console.log(`Fetching ids from ID ${chalk.yellow(id+1)} to ${chalk.yellow(id+100)}.`)
-    response.on('data', (chunk) => {
-      data += chunk;
-    });
-
-    response.on('end', async () => {
-      let parsedData = JSON.parse(data)
-      parsedData.transfers.forEach(item => {
-        const { id, timestamp } = item;
-        storeSeparateFids(id, timestamp);
-      });
-
-      let accountCount = parsedData.transfers.length
-
-      if (parsedData.transfers.length <100) {
-        console.log(`Final batch of ${chalk.yellow(accountCount)} accounts added from id batch ${chalk.yellow(id+1)}.`)
-        process.exit(0);
-      }
-      else {
-        console.log(`Added ${chalk.yellow(accountCount)} accounts from id batch ${chalk.yellow(id+1)}.`)
-        console.log(``)
-        fetchSeparate(id+100)
-      }
-    });
-  }).on('error', (error) => {
-    console.error(error);
-  });
-}
-
-fetchSeparate(0)
 
 function fetchNew(timestamp) {
   let next_ts = 0;
@@ -207,7 +171,7 @@ function fetchNew(timestamp) {
 //fetchNew(1698492334)
 
 
-//fetchExisting(0) // will fetch every accout from id 0
+fetchExisting(0) // will fetch every accout from id 0
 //deleteRecord('graph/');
 // Run fetchData every 600 seconds
 //setInterval(fetchData, 600 * 1000);
