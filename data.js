@@ -20,18 +20,19 @@ import { getDatabase, ref, set, child, get, remove} from "firebase/database";
 const db = getDatabase();
 
 let sepgraph_additions = 0;
+let sepgraph_new = 0;
 
 function storeFids(id, timestamp) {
   set(ref(db, 'graph/' + timestamp), {
     fid: id,
-    unixtime: timestamp
+    //unixtime: timestamp
   });
 }
 
 function storeSeparateFids(id, timestamp) {
   set(ref(db, 'sepgraph/' + timestamp), {
     fid: id,
-    unixtime: timestamp
+    //unixtime: timestamp
   });
 }
 
@@ -85,7 +86,7 @@ function fetchExisting(id) {
     response.on('data', (chunk) => {
       data += chunk;
     });
-
+    sepgraph_new = 0;
     response.on('end', async () => {
       let parsedData = JSON.parse(data)
       parsedData.transfers.forEach(item => {
@@ -93,17 +94,20 @@ function fetchExisting(id) {
         if (id <= 701 || id % 15 === 0) {
           storeSeparateFids(id, timestamp);
           sepgraph_additions += 1
+          sepgraph_new += 1
         }
         storeFids(id, timestamp);
       });
 
       let accountCount = parsedData.transfers.length
       if (parsedData.transfers.length <100) {
-        console.log(`Final batch of ${chalk.yellow(accountCount)} accounts added from id batch ${chalk.yellow(id+1)}, with ${sepgraph_additions} added to Separate Graph.`)
+        console.log(`Final batch of ${chalk.yellow(accountCount)} accounts added from id batch ${chalk.yellow(id+1)}, with ${sepgraph_additions} (${sepgraph_new} new) added to Separate Graph.`)
+        console.log(``)
+        console.log(`Running fetchNewest...`)
         fetchNewest()
       }
       else {
-        console.log(`Added ${chalk.yellow(accountCount)} accounts from id batch ${chalk.yellow(id+1)}, with ${sepgraph_additions} added to Separate Graph.`)
+        console.log(`Added ${chalk.yellow(accountCount)} accounts from id batch ${chalk.yellow(id+1)}, with ${sepgraph_additions} (${sepgraph_new} new) added to Separate Graph.`)
         console.log(``)
         fetchExisting(id+100)
       }
@@ -125,7 +129,7 @@ function fetchNew(timestamp) {
     response.on('end', async () => {
       let parsedData = JSON.parse(data)
       if (parsedData.transfers.length === 0) {
-        console.log(`No accounts in batch ${chalk.yellow(timestamp)}.`)
+        console.log(`No accounts in batch ${chalk.yellow(timestamp)}`)
         process.exit(0);
       }
       
@@ -175,9 +179,9 @@ function fetchNewest() {
   fetchNew(1698501557)
 }
 
-fetchNewest()
+//fetchNewest()
 
-//fetchExisting(0) // will fetch every accout from id 0
+fetchExisting(0) // will fetch every accout from id 0
 //deleteRecord('graph/');
 
 // Run fetchData every 600 seconds

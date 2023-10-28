@@ -43,8 +43,8 @@
             let index = 0;
             for (let key in graph) {
               //if (index % 40 === 0 || index <= 700 || Object.keys(graph).length - index <= 300)  {  //code only ever needed when using graph, not sepgraph (which already applies this '<700, final 300, or every 40th' filter)
-                labels.push(graph[key]['unixtime']);
-                console.log(key)
+                //labels.push(graph[key]['unixtime']);
+                labels.push(key);
                 data.push(graph[key]['fid']);
               //}
               index++;
