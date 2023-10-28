@@ -114,7 +114,6 @@ function fetchExisting(id) {
 }
 
 function fetchNew(timestamp) {
-  console.log(`Collecting batch from timestamp ${chalk.yellow(timestamp)}.`)
   let next_ts = 0;
   let new_batch_needed;
   https.get(`https://fnames.farcaster.xyz/transfers?from_ts=${timestamp}`, async (response) => {
@@ -160,6 +159,7 @@ function fetchNew(timestamp) {
       });
       
       if (new_batch_needed == true) {
+        console.log(``)
         fetchNew(next_ts);
       } else {
         process.exit(0);
@@ -172,7 +172,7 @@ function fetchNew(timestamp) {
 }
 
 function fetchNewest() {
-  fetchNew(1698501126)
+  fetchNew(1698501557)
 }
 
 fetchNewest()
