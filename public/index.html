@@ -42,13 +42,15 @@
             var data = [];
             let index = 0;
             for (let key in graph) {
-              if (index % 3 === 0 || index <= 100 || Object.keys(graph).length - index <= 50)  {
+              if (index % 8 === 0 || index <= 700 || Object.keys(graph).length - index <= 20)  {
                 //labels.push(graph[key]['unixtime']);
                 labels.push(key);
                 data.push(graph[key]['fid']);
               }
               index++;
             }
+            let dateP = new Date(1697041847 * 1000);
+            let localTimeP = dateP.toLocaleString();
             var myChart = new Chart(ctx, {
               type: 'line',
               data: {
@@ -63,6 +65,20 @@
               },
               options: {
                 plugins: {
+                  annotation: {
+                    annotations: [{
+                      type: 'line',
+                      mode: 'vertical',
+                      scaleID: 'x',
+                      value: 1697041847,
+                      borderColor: 'red',
+                      borderWidth: 2,
+                      label: {
+                        enabled: true,
+                        content: `Farcaster goes permissionless, ${localTimeP}`
+                      }
+                    }]
+                  },
                   legend: {
                   display: false,
                 },

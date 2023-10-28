@@ -176,12 +176,12 @@ function fetchNew(timestamp) {
 }
 
 function fetchNewest() {
-  fetchNew(1698501557)
+  fetchNew(1698504354)
 }
 
-//fetchNewest()
+fetchNewest()
 
-fetchExisting(0) // will fetch every accout from id 0
+//fetchExisting(0) // will fetch every accout from id 0
 //deleteRecord('graph/');
 
 // Run fetchData every 600 seconds
