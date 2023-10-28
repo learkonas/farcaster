@@ -19,6 +19,8 @@ const app = initializeApp(firebaseConfig);
 import { getDatabase, ref, set, child, get, remove} from "firebase/database";
 const db = getDatabase();
 
+let sepgraph_additions = 0;
+
 function storeFids(id, timestamp) {
   set(ref(db, 'graph/' + timestamp), {
     fid: id,
@@ -77,10 +79,9 @@ function retain10latest () {
 }
 
 function fetchExisting(id) {
-  let sepgraph_additions = 0;
   https.get(`https://fnames.farcaster.xyz/transfers?from_id=${id}`, async (response) => {
-    let data = '';
     console.log(`Fetching ids from ID ${chalk.yellow(id+1)} to ${chalk.yellow(id+100)}.`)
+    let data = '';
     response.on('data', (chunk) => {
       data += chunk;
     });
@@ -89,7 +90,7 @@ function fetchExisting(id) {
       let parsedData = JSON.parse(data)
       parsedData.transfers.forEach(item => {
         const { id, timestamp } = item;
-        if (id <= 701 || id >= 25600 || id % 40 == 0) {
+        if (id <= 701 || id % 15 === 0) {
           storeSeparateFids(id, timestamp);
           sepgraph_additions += 1
         }
@@ -99,7 +100,7 @@ function fetchExisting(id) {
       let accountCount = parsedData.transfers.length
       if (parsedData.transfers.length <100) {
         console.log(`Final batch of ${chalk.yellow(accountCount)} accounts added from id batch ${chalk.yellow(id+1)}, with ${sepgraph_additions} added to Separate Graph.`)
-        process.exit(0);
+        fetchNewest()
       }
       else {
         console.log(`Added ${chalk.yellow(accountCount)} accounts from id batch ${chalk.yellow(id+1)}, with ${sepgraph_additions} added to Separate Graph.`)
@@ -113,6 +114,7 @@ function fetchExisting(id) {
 }
 
 function fetchNew(timestamp) {
+  console.log(`Collecting batch from timestamp ${chalk.yellow(timestamp)}.`)
   let next_ts = 0;
   let new_batch_needed;
   https.get(`https://fnames.farcaster.xyz/transfers?from_ts=${timestamp}`, async (response) => {
@@ -150,14 +152,15 @@ function fetchNew(timestamp) {
       
       parsedData.transfers.forEach(item => {
         const { id, timestamp } = item;
+        if (id % 5 === 1) {
+          storeSeparateFids(id, timestamp);
+          sepgraph_additions += 1
+        }
         storeFids(id, timestamp);
       });
-      //res.send(data);
-      /*
-      // Fetch next batch of data*/
+      
       if (new_batch_needed == true) {
-        console.log(`Collecting the next batch from timestamp ${chalk.yellow(next_ts)}.`)
-        fetchData(next_ts);
+        fetchNew(next_ts);
       } else {
         process.exit(0);
       }
@@ -168,10 +171,14 @@ function fetchNew(timestamp) {
   });
 }
 
-//fetchNew(1698492334)
+function fetchNewest() {
+  fetchNew(1698501126)
+}
 
+fetchNewest()
 
-fetchExisting(0) // will fetch every accout from id 0
+//fetchExisting(0) // will fetch every accout from id 0
 //deleteRecord('graph/');
+
 // Run fetchData every 600 seconds
 //setInterval(fetchData, 600 * 1000);
