@@ -19,7 +19,7 @@ const app = initializeApp(firebaseConfig);
 import { getDatabase, ref, set, child, get, remove} from "firebase/database";
 const db = getDatabase();
 
-let sepgraph_additions = 0;
+let sepgraph_additions_total = 0;
 let sepgraph_new = 0;
 
 function storeFids(id, timestamp) {
@@ -43,7 +43,7 @@ async function updateLatest(id, timestamp, username, address) {
     owner: address,
     unixtime: timestamp
   });
-  console.log(` Adding ${timestamp} to latest.`)
+  console.log(` Adding ${chalk.yellow(timestamp)} to latest.`)
 }
 
 async function deleteRecord(key) {
@@ -93,7 +93,7 @@ function fetchExisting(id) {
         const { id, timestamp } = item;
         if (id <= 701 || id % 15 === 0) {
           storeSeparateFids(id, timestamp);
-          sepgraph_additions += 1
+          sepgraph_additions_total += 1
           sepgraph_new += 1
         }
         storeFids(id, timestamp);
@@ -101,13 +101,13 @@ function fetchExisting(id) {
 
       let accountCount = parsedData.transfers.length
       if (parsedData.transfers.length <100) {
-        console.log(`Final batch of ${chalk.yellow(accountCount)} accounts added from id batch ${chalk.yellow(id+1)}, with ${sepgraph_additions} (${sepgraph_new} new) added to Separate Graph.`)
+        console.log(`Final batch of ${chalk.yellow(accountCount)} accounts added from id batch ${chalk.yellow(id+1)}, with ${sepgraph_additions_total} (${sepgraph_new} new) added to Separate Graph.`)
         console.log(``)
-        console.log(`Running fetchNewest...`)
+        console.log(`Running fetchNew...`)
         fetchNewest()
       }
       else {
-        console.log(`Added ${chalk.yellow(accountCount)} accounts from id batch ${chalk.yellow(id+1)}, with ${sepgraph_additions} (${sepgraph_new} new) added to Separate Graph.`)
+        console.log(`Added ${chalk.yellow(accountCount)} accounts from id batch ${chalk.yellow(id+1)}, with ${sepgraph_additions_total} (${sepgraph_new} new) added to Separate Graph.`)
         console.log(``)
         fetchExisting(id+100)
       }
@@ -117,6 +117,8 @@ function fetchExisting(id) {
   });
 }
 
+let accountCount_total = 0
+sepgraph_additions_total = 0;
 function fetchNew(timestamp) {
   let next_ts = 0;
   let new_batch_needed;
@@ -129,12 +131,13 @@ function fetchNew(timestamp) {
     response.on('end', async () => {
       let parsedData = JSON.parse(data)
       if (parsedData.transfers.length === 0) {
-        console.log(`No accounts in batch ${chalk.yellow(timestamp)}`)
+        console.log(`No accounts in batch ${chalk.yellow(timestamp)}.`)
         process.exit(0);
       }
       
       let accountCount = parsedData.transfers.length
       console.log(`${accountCount} accounts fetched in batch ${chalk.yellow(timestamp)}.`)
+      accountCount_total += accountCount
       if (accountCount > 10) {
         if (accountCount === 100) {
           new_batch_needed = true;
@@ -149,7 +152,6 @@ function fetchNew(timestamp) {
         await updateLatest(object.id, object.timestamp, object.username, object.owner);
         if (i === latestObjects.length - 1) {
           next_ts = object.timestamp + 1
-          console.log(`Use this timestamp next: ${chalk.yellow(next_ts)}`)
         }  
       }
       
@@ -157,15 +159,18 @@ function fetchNew(timestamp) {
         const { id, timestamp } = item;
         if (id % 5 === 1) {
           storeSeparateFids(id, timestamp);
-          sepgraph_additions += 1
+          sepgraph_additions_total += 1
         }
         storeFids(id, timestamp);
       });
-      
+
+      console.log(`Added ${chalk.yellow(accountCount_total)} accounts from timestamp ${chalk.yellow(original_timestamp)}, with ${chalk.yellow(sepgraph_additions_total)} added to Separate Graph.`)
       if (new_batch_needed == true) {
         console.log(``)
         fetchNew(next_ts);
       } else {
+        console.log(``)
+        console.log(`Use this timestamp next: ${chalk.yellow(next_ts)}`)
         process.exit(0);
       }
     });
@@ -174,13 +179,12 @@ function fetchNew(timestamp) {
     console.error(error);
   });
 }
+let original_timestamp = 1702321844
 
 function fetchNewest() {
-  fetchNew(1698504354)
+  fetchNew(original_timestamp)
 }
-
 fetchNewest()
-
 //fetchExisting(0) // will fetch every accout from id 0
 //deleteRecord('graph/');
 
