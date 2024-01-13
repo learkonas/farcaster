@@ -131,7 +131,7 @@ function fetchNew(timestamp) {
     response.on('end', async () => {
       let parsedData = JSON.parse(data)
       if (parsedData.transfers.length === 0) {
-        console.log(`No accounts in batch ${chalk.yellow(timestamp)}.`)
+        console.log(`No accounts in batch ${chalk.yellow(timestamp)}`)
         process.exit(0);
       }
       
@@ -179,8 +179,8 @@ function fetchNew(timestamp) {
     console.error(error);
   });
 }
-let original_timestamp = 1702321844
 
+let original_timestamp = 1705188860
 function fetchNewest() {
   fetchNew(original_timestamp)
 }

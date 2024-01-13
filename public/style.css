@@ -6,7 +6,7 @@
 
 html {
     /*background-image: url("bg.webp");*/
-    background: radial-gradient(farthest-corner ellipse, rgb(206 180 199), rgb(242 222 237), rgb(206 180 199));
+    background: radial-gradient(farthest-corner ellipse, rgb(237 223 236), rgb(242 222 237), rgb(230 212 231));
 }
 
 body {
@@ -26,7 +26,7 @@ h1 {
 }
 
 h2 {
-  font-size: 2vw;
+  font-size: 0.6em;
 }
 
 table {
