@@ -12,6 +12,7 @@
     <div id="wrapper">
       <div id="title" class="block">
         <h1>Watch the Farcaster family grow!</h1>
+        <h2>Hover over the chart to see when they joined.</h2>
       </div>
       <div id="chart" class="block">
         <canvas id="myChart"></canvas>
@@ -42,7 +43,7 @@
             var data = [];
             let index = 0;
             for (let key in graph) {
-              if (index % 8 === 0 || index <= 700 || Object.keys(graph).length - index <= 20)  {
+              if (index % 20 === 0 || index <= 1000 || Object.keys(graph).length - index <= 20)  {
                 //labels.push(graph[key]['unixtime']);
                 labels.push(key);
                 data.push(graph[key]['fid']);
