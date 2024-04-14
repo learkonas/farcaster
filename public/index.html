@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Farcaster Growth</title>
+  <title>Home to Farfinder.</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -11,156 +11,12 @@
   <div id="container">
     <div id="wrapper">
       <div id="title" class="block">
-        <h1>Watch the Farcaster family grow!</h1>
-        <h2>Hover over the chart to see when they joined.</h2>
+        <h1>Made by @lsn</h1>
       </div>
-      <div id="chart" class="block">
-        <canvas id="myChart"></canvas>
-      </div>
-      <div id="latest" class="block">
-        <h2>Last 10 accounts to join Farcaster</h2>
-        <table id="latestData">
-        </table>
-      </div>  
     </div>  
   </div>
   <script src="/__/firebase/10.4.0/firebase-app-compat.js"></script>
   <script src="/__/firebase/10.4.0/firebase-database-compat.js"></script>
   <script src="/__/firebase/init.js"></script>
-  <script>
-    function problem() {
-      console.log("No data available! Please message https://warpcast.com/lsn to fix the issue.");
-      alert("No data available! Please message https://warpcast.com/lsn to fix the issue.")
-    }
-
-    let graph = []
-    const db = firebase.database().ref('sepgraph');
-    db.get().then((snapshot) => {
-      if (snapshot.exists()) {
-        graph = snapshot.val()
-        var ctx = document.getElementById('myChart').getContext('2d');
-            var labels = [];
-            var data = [];
-            let index = 0;
-            for (let key in graph) {
-              if (index % 20 === 0 || index <= 1000 || Object.keys(graph).length - index <= 20)  {
-                //labels.push(graph[key]['unixtime']);
-                labels.push(key);
-                data.push(graph[key]['fid']);
-              }
-              index++;
-            }
-            let dateP = new Date(1697041847 * 1000);
-            let localTimeP = dateP.toLocaleString();
-            var myChart = new Chart(ctx, {
-              type: 'line',
-              data: {
-                labels: labels,
-                datasets: [{
-                  label: 'Account number',
-                  data: data,
-                  backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                  borderColor: 'rgba(153, 102, 255, 1)',
-                  borderWidth: 1
-                }]
-              },
-              options: {
-                plugins: {
-                  annotation: {
-                    annotations: [{
-                      type: 'line',
-                      mode: 'vertical',
-                      scaleID: 'x',
-                      value: 1697041847,
-                      borderColor: 'red',
-                      borderWidth: 2,
-                      label: {
-                        enabled: true,
-                        content: `Farcaster goes permissionless, ${localTimeP}`
-                      }
-                    }]
-                  },
-                  legend: {
-                  display: false,
-                },
-                  tooltip: {
-                    callbacks: {
-                      title: function(context) {
-                        var unixTimestamp = context[0].parsed.x;
-                        var date = new Date(unixTimestamp * 1000);
-                        return date.toLocaleString();
-                      }
-                    }
-                  }
-                },
-                scales: {
-                  x: {
-                    type: 'linear',
-                    title: {
-                      display: true,
-                      text: 'Time'
-                    },
-                    ticks: {
-                      display: false,
-                      autoSkip: true,
-                      maxTicksLimit: 16 // Adjust this number to your preference
-                    },
-                    grid: {
-                      display: true, // This will show the grid lines
-                    }
-                  },
-                  y: {
-                    beginAtZero: true,
-                    title: {
-                      display: true,
-                      text: 'Registered accounts'
-                    }
-                  }
-                }
-              }
-            });
-      }
-    }).catch((error) => {
-      console.error(error);
-      //problem();
-    });
-
-    // Populating the latest 10 users
-    let latest = []
-    const dbRef = firebase.database().ref('latest');
-    dbRef.get().then((snapshot) => {
-      if (snapshot.exists()) {
-        latest = snapshot.val()
-        let tableData = ''
-        for (let key in latest) {
-          let fid = latest[key]['fid']
-          let name = latest[key]['name']
-          let owner = latest[key]['owner']
-          let unixtime = latest[key]['unixtime']
-          let date = new Date(unixtime * 1000);
-          let localTime = date.toLocaleString();
-
-          tableData += `
-          <tr>
-            <td><a href="https://warpcast.com/${name}" target="_blank">${name}</a></td>
-            <td><a href="https://etherscan.io/address/${owner}" target="_blank">${localTime}</a></td>
-          </tr>  
-          `          
-        }
-        document.getElementById('latestData').innerHTML = `
-          <tr>
-              <th>Username</th>
-              <th>Owner</th> 
-          </tr>
-          ${tableData}
-        `
-      } else {
-        problem();
-      }
-    }).catch((error) => {
-      console.error(error);
-      problem();
-    });
-  </script>
 </body>
 </html>

@@ -16,7 +16,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 //const analytics = getAnalytics(app);
 
-import { getDatabase, ref, set, child, get, remove} from "firebase/database";
+import { getDatabase, ref, set, query, limitToFirst, get, remove} from "firebase/database";
+
 const db = getDatabase();
 
 let sepgraph_additions_total = 0;
@@ -180,13 +181,48 @@ function fetchNew(timestamp) {
   });
 }
 
-let original_timestamp = 1705264946
+let original_timestamp = 1708206574
 function fetchNewest() {
   fetchNew(original_timestamp)
 }
-fetchNewest()
+//fetchNewest()
 //fetchExisting(0) // will fetch every accout from id 0
 //deleteRecord('graph/');
 
 // Run fetchData every 600 seconds
 //setInterval(fetchData, 600 * 1000);
+let count = 0
+async function fetchFirst50kKeys() {
+  const db = getDatabase();
+  const graphRef = ref(db, 'graph/');
+  const first50kQuery = query(graphRef, limitToFirst(50000));
+  try {
+    const snapshot = await get(first50kQuery);
+    if (snapshot.exists()) {
+      let fiftyKkeys  = Object.keys(snapshot.val())
+      console.log("Fetched first 50,000 keys:", fiftyKkeys.length);
+      fiftyKkeys.forEach(key => {
+        deleteRecord('graph/' + key);
+        if (++count % 1000 === 0) {
+          console.log("deleted: " + key)
+        }
+      });
+      console.log("deleted 50,000 keys")
+      try {
+        deleteRecord('graph/')
+      }
+      catch {
+        console.log("tried but failed to delete the remaining keys. Removing the next 50k")
+        fetchFirst50kKeys();
+      }
+      
+    } else {
+      console.log("No data available");
+    }
+  } catch (error) {
+    console.error("Error fetching first 50,000 keys:", error);
+  }
+}
+
+fetchFirst50kKeys();
+
